@@ -211,6 +211,34 @@ begin
      end;
 end;
 
+// ここからリンゴ関数を書きます
+// なんかうまくいってないです．裏表の問題っぽいです．
+function Apple(const T_:TdSingle2D ) :TdSingle3D;
+const
+  SCALE : Single = 0.3;
+var
+  u : TdSingle;
+  v : TdSingle;
+  v_ : Single;
+begin
+  u := Pi2 * T_.U;
+  v := Pi2 * T_.V - Pi2;
+  // Ln使うためにこんな書き方してます．
+  v_ := v.o;
+
+  with Result do
+  begin
+    X := Cos(u)*(4 + 3.8*Cos(v));
+    Y := Sin(u)*(4 + 3.8*Cos(v));
+    Z :=(Cos(v)+Sin(v)-1)*(1+Sin(v))*Ln(1.0-Pi*v_/10.0)+7.5*Sin(v);
+    X := X*SCALE;
+    Y := Y*SCALE;
+    Z := Z*SCALE;
+  end;
+
+end;
+
+
 procedure TForm1.InitGeomet;
 const
      DivX :Integer = 1100;
@@ -250,7 +278,8 @@ const
 
                     Ts[ I ] := T;
 
-                    M := Tensor( T, BraidedTorus );
+                    //M := Tensor( T, BraidedTorus );
+                    M := Tensor( T, Apple );
 
                     Ps[ I ] := M.AxisP;
                     Ns[ I ] := M.AxisZ;
