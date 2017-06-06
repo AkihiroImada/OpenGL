@@ -212,7 +212,6 @@ begin
 end;
 
 // ここからリンゴ関数を書きます
-// なんかうまくいってないです．裏表の問題っぽいです．
 function Apple(const T_:TdSingle2D ) :TdSingle3D;
 const
   SCALE : Single = 0.3;
@@ -222,7 +221,7 @@ var
   v_ : Single;
 begin
   u := Pi2 * T_.U;
-  v := Pi2 * T_.V - Pi2;
+  v := Pi2 * T_.V - Pi;
   // Ln使うためにこんな書き方してます．
   v_ := v.o;
 
@@ -317,8 +316,8 @@ const
                     //  │      │
                     //  10───11
 
-                    Es[ I ] := TCardinal3D.Create( I00, I10, I11 );  Inc( I );
-                    Es[ I ] := TCardinal3D.Create( I11, I01, I00 );  Inc( I );
+                    Es[ I ] := TCardinal3D.Create( I11, I10, I00 );  Inc( I );
+                    Es[ I ] := TCardinal3D.Create( I11, I00, I01 );  Inc( I );
                end;
           end;
 
@@ -346,6 +345,7 @@ end;
 
 procedure TForm1.InitPluger;
 begin
+    // 頂点バッファ
      with _PlugerV do
      begin
           Add( 0{BinP}, _GeometP{Buff} );
@@ -420,6 +420,7 @@ begin
                Add( _ShaderF{Shad} );
           end;
 
+          // Shaderに送るから名前を合わせる
           with VerBufs do
           begin
                Add( 0{BinP}, '_Vertex_Pos'{Name}, 3{EleN}, GL_FLOAT{EleT} );
