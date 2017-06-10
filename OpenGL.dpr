@@ -40,7 +40,8 @@ uses
   MYX.Camera in '_LIBRARY\MYX.Camera.pas',
   MYX.Shaper in '_LIBRARY\MYX.Shaper.pas',
   MYX.Matery in '_LIBRARY\MYX.Matery.pas',
-  LUX.Tree in '_LIBRARY\LUXOPHIA\LUX\LUX.Tree.pas';
+  LUX.Tree in '_LIBRARY\LUXOPHIA\LUX\LUX.Tree.pas',
+  LUX.GPU.OpenGL.Material.FMX in '_LIBRARY\LUXOPHIA\LUX.GPU.OpenGL\FMX\LUX.GPU.OpenGL.Material.FMX.pas';
 
 {$R *.res}
 
