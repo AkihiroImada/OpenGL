@@ -1,10 +1,17 @@
-﻿unit LUX.GPU.OpenGL.Material;
+﻿unit MYX.Matery;
 
 interface //#################################################################### ■
 
 uses Winapi.OpenGL, Winapi.OpenGLext,
-     LUX,
+     LUX, LUX.D1, LUX.D2, LUX.D3, LUX.M4,
      LUX.GPU.OpenGL,
+     LUX.GPU.OpenGL.GLView,
+     LUX.GPU.OpenGL.Buffer,
+     LUX.GPU.OpenGL.Buffer.Unif,
+     LUX.GPU.OpenGL.Buffer.Vert,
+     LUX.GPU.OpenGL.Buffer.Elem,
+     LUX.GPU.OpenGL.Imager,
+     LUX.GPU.OpenGL.Imager.FMX,
      LUX.GPU.OpenGL.Shader,
      LUX.GPU.OpenGL.Engine;
 
@@ -14,14 +21,16 @@ type //$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 
      //$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$【クラス】
 
-     //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% TGLMaterial
+     //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% TMyMatery
 
-     TGLMaterial = class
+     TMyMatery = class
      private
      protected
        _ShaderV :TGLShaderV;
        _ShaderF :TGLShaderF;
        _Engine  :TGLEngine;
+       _Sample  :TGLSample;
+       _Imager  :TGLImager2D_RGBA;
      public
        constructor Create;
        destructor Destroy; override;
@@ -29,9 +38,10 @@ type //$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
        property ShaderV :TGLShaderV       read _ShaderV;
        property ShaderF :TGLShaderF       read _ShaderF;
        property Engine  :TGLEngine        read _Engine ;
+       property Sample  :TGLSample        read _Sample ;
+       property Imager  :TGLImager2D_RGBA read _Imager ;
        ///// メソッド
-       procedure Use; virtual;
-       procedure Unuse; virtual;
+       procedure Use;
      end;
 
 //const //$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$【定数】
@@ -46,7 +56,7 @@ implementation //###############################################################
 
 //$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$【クラス】
 
-//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% TGLMaterial
+//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% TMyMatery
 
 //&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&& private
 
@@ -54,29 +64,15 @@ implementation //###############################################################
 
 //&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&& public
 
-constructor TGLMaterial.Create;
+constructor TMyMatery.Create;
 begin
      inherited;
 
-     _ShaderV := TGLShaderV.Create;
-     _ShaderF := TGLShaderF.Create;
-     _Engine  := TGLEngine .Create;
-
-     with _ShaderV do
-     begin
-          OnCompiled := procedure
-          begin
-               _Engine.Link;
-          end;
-     end;
-
-     with _ShaderF do
-     begin
-          OnCompiled := procedure
-          begin
-               _Engine.Link;
-          end;
-     end;
+     _ShaderV := TGLShaderV      .Create;
+     _ShaderF := TGLShaderF      .Create;
+     _Engine  := TGLEngine       .Create;
+     _Sample  := TGLSample       .Create;
+     _Imager  := TGLImager2D_RGBA.Create;
 
      with _Engine do
      begin
@@ -111,25 +107,25 @@ begin
      end;
 end;
 
-destructor TGLMaterial.Destroy;
+destructor TMyMatery.Destroy;
 begin
+     _Sample .DisposeOf;
+     _Imager .DisposeOf;
+     _Engine .DisposeOf;
      _ShaderV.DisposeOf;
      _ShaderF.DisposeOf;
-     _Engine .DisposeOf;
 
      inherited;
 end;
 
 /////////////////////////////////////////////////////////////////////// メソッド
 
-procedure TGLMaterial.Use;
+procedure TMyMatery.Use;
 begin
      _Engine.Use;
-end;
 
-procedure TGLMaterial.Unuse;
-begin
-     _Engine.Unuse;
+     _Sample.Use( 0 );
+     _Imager.Use( 0 );
 end;
 
 //$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$【ルーチン】
