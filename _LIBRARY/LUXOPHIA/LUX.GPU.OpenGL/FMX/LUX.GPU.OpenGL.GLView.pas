@@ -5,7 +5,8 @@ interface //####################################################################
 uses
   System.SysUtils, System.Types, System.UITypes, System.Classes, System.Variants,
   FMX.Types, FMX.Graphics, FMX.Controls, FMX.Forms, FMX.Dialogs, FMX.StdCtrls,
-  Winapi.Windows, Winapi.OpenGL, FMX.Platform.Win,
+  FMX.Platform.Win,
+  Winapi.Windows, Winapi.OpenGL,
   LUX, LUX.GPU.OpenGL, LUX.GPU.OpenGL.FMX, LUX.GPU.OpenGL.Geometry;
 
 type
