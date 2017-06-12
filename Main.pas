@@ -206,6 +206,23 @@ begin
 
 end;
 
+// 天球の関数
+// どうすれば法線は常に内向きになる?
+function SkyBox(const T_:TdSingle2D):TdSingle3D;
+const SCALE = 500;
+begin
+  with Result do
+  begin
+    if(T_.U < 2 ) then X := T_.U;
+    if(T_.U >= 2) then X := T_.U -2;
+    if (T_.U < 2) then Y := 0;
+    if (T_.U >=2) then Y := 1;
+    Z := T_.V;
+    X := X*SCALE;
+    Y := Y*SCALE;
+    Z := Z*SCALE;
+  end;
+end;
 
 procedure TForm1.InitShaper;
 var
@@ -214,6 +231,8 @@ begin
      with _Shaper do
      begin
           LoadFormFunc( Apple, 1300, 100 );
+          // 天球を出そうとしたらリンゴが消えてしまった...
+          LoadFormFunc( SkyBox, 4, 2);
 
           with S do
           begin
