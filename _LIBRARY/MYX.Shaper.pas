@@ -189,7 +189,10 @@ begin
      _Nors.Use( 1{BinP} );
      _Texs.Use( 2{BinP} );
 
-     _Eles.Draw;
+     //_Eles.Draw;
+     glEnable(GL_PROGRAM_POINT_SIZE);
+     glDrawArrays( GL_POINTS, 0, _Poss.Count{点数} );
+
 end;
 
 //------------------------------------------------------------------------------
@@ -233,6 +236,8 @@ procedure TMyShaper.LoadFormFunc( const Func_:TConstFunc<TdSingle2D,TdSingle3D>;
                     M := Tensor( T, Func_ );
 
                     Ps[ I ] := M.AxisP;
+                    //Ts[I] := M.AxisX;
+                    //Bs[I] := M.AxisY;
                     Ns[ I ] := M.AxisZ;
                end;
           end;

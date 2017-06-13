@@ -232,7 +232,7 @@ begin
      begin
           LoadFormFunc( Apple, 1300, 100 );
           // 天球を出そうとしたらリンゴが消えてしまった...
-          LoadFormFunc( SkyBox, 4, 2);
+          //LoadFormFunc( SkyBox, 4, 2);
 
           with S do
           begin
