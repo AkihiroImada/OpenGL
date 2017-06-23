@@ -8,7 +8,7 @@ uses
   FMX.StdCtrls, FMX.Controls.Presentation, FMX.ScrollBox, FMX.Memo, FMX.Objects, FMX.TabControl,
   Winapi.OpenGL, Winapi.OpenGLext,
   LUX, LUX.D1, LUX.D2, LUX.D3, LUX.M4,
-  LUX.GPU.OpenGL.GLView, LUX.GPU.OpenGL.Shader,
+  LUX.GPU.OpenGL.Viewer, LUX.GPU.OpenGL.Shader,
   MYX.Camera,
   MYX.Shaper,
   MYX.Matery;
@@ -18,11 +18,11 @@ type
     TabControl1: TTabControl;
       TabItemV: TTabItem;
         Rectangle1: TRectangle;
-          GLView1: TGLView;
-          GLView2: TGLView;
+          GLViewer1: TGLViewer;
+          GLViewer2: TGLViewer;
         Rectangle2: TRectangle;
-          GLView3: TGLView;
-          GLView4: TGLView;
+          GLViewer3: TGLViewer;
+          GLViewer4: TGLViewer;
       TabItemS: TTabItem;
         TabControlS: TTabControl;
           TabItemSV: TTabItem;
@@ -39,9 +39,9 @@ type
     procedure FormDestroy(Sender: TObject);
     procedure MemoSVSChangeTracking(Sender: TObject);
     procedure MemoSFSChangeTracking(Sender: TObject);
-    procedure GLView4MouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Single);
-    procedure GLView4MouseMove(Sender: TObject; Shift: TShiftState; X, Y: Single);
-    procedure GLView4MouseUp(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Single);
+    procedure GLViewer4MouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Single);
+    procedure GLViewer4MouseMove(Sender: TObject; Shift: TShiftState; X, Y: Single);
+    procedure GLViewer4MouseUp(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Single);
   private
     { private 宣言 }
     _MouseA :TSingle2D;
@@ -55,12 +55,12 @@ type
     _Camera2 :TMyCamera;
     _Camera3 :TMyCamera;
     _Camera4 :TMyCamera;
-    _Shaper  :TMyShaper;
     _Matery  :TMyMatery;
+    _Shaper  :TMyShaper;
     ///// メソッド
     procedure InitCamera;
-    procedure InitShaper;
     procedure InitMatery;
+    procedure InitShaper;
     procedure InitViewer;
   end;
 
@@ -146,6 +146,52 @@ begin
      end;
 
      _Camera4.Data := C;
+end;
+
+//------------------------------------------------------------------------------
+
+procedure TForm1.InitMatery;
+begin
+     with _Matery do
+     begin
+          with ShaderV do
+          begin
+               OnCompiled := procedure
+               begin
+                    MemoSVE.Lines.Assign( Errors );
+
+                    _Matery.Engine.Link;
+               end;
+
+               Source.LoadFromFile( '..\..\_DATA\ShaderV.glsl' );
+
+               MemoSVS.Lines.Assign( Source );
+          end;
+
+          with ShaderF do
+          begin
+               OnCompiled := procedure
+               begin
+                    MemoSFE.Lines.Assign( Errors );
+
+                    _Matery.Engine.Link;
+               end;
+
+               Source.LoadFromFile( '..\..\_DATA\ShaderF.glsl' );
+
+               MemoSFS.Lines.Assign( Source );
+          end;
+
+          with Engine do
+          begin
+               OnLinked := procedure
+               begin
+                    MemoP.Lines.Assign( Errors );
+               end;
+          end;
+
+          Imager.LoadFromFile( '..\..\_DATA\Spherical_1024x1024.png' );
+     end;
 end;
 
 //------------------------------------------------------------------------------
@@ -245,76 +291,30 @@ end;
 
 //------------------------------------------------------------------------------
 
-procedure TForm1.InitMatery;
-begin
-     with _Matery do
-     begin
-          with ShaderV do
-          begin
-               OnCompiled := procedure
-               begin
-                    MemoSVE.Lines.Assign( Errors );
-
-                    _Matery.Engine.Link;
-               end;
-
-               Source.LoadFromFile( '..\..\_DATA\ShaderV.glsl' );
-
-               MemoSVS.Lines.Assign( Source );
-          end;
-
-          with ShaderF do
-          begin
-               OnCompiled := procedure
-               begin
-                    MemoSFE.Lines.Assign( Errors );
-
-                    _Matery.Engine.Link;
-               end;
-
-               Source.LoadFromFile( '..\..\_DATA\ShaderF.glsl' );
-
-               MemoSFS.Lines.Assign( Source );
-          end;
-
-          with Engine do
-          begin
-               OnLinked := procedure
-               begin
-                    MemoP.Lines.Assign( Errors );
-               end;
-          end;
-
-          Imager.LoadFromFile( '..\..\_DATA\Spherical_1024x1024.png' );
-     end;
-end;
-
-//------------------------------------------------------------------------------
-
 procedure TForm1.InitViewer;
 begin
-     GLView1.OnPaint := procedure
+     GLViewer1.OnPaint := procedure
      begin
           _Camera1.Use;
           _Matery .Use;
           _Shaper .Draw;
      end;
 
-     GLView2.OnPaint := procedure
+     GLViewer2.OnPaint := procedure
      begin
           _Camera2.Use;
           _Matery .Use;
           _Shaper .Draw;
      end;
 
-     GLView3.OnPaint := procedure
+     GLViewer3.OnPaint := procedure
      begin
           _Camera3.Use;
           _Matery .Use;
           _Shaper .Draw;
      end;
 
-     GLView4.OnPaint := procedure
+     GLViewer4.OnPaint := procedure
      begin
           _Camera4.Use;
           _Matery .Use;
@@ -333,12 +333,12 @@ begin
      _Camera2 := TMyCamera.Create;
      _Camera3 := TMyCamera.Create;
      _Camera4 := TMyCamera.Create;
-     _Shaper  := TMyShaper.Create;
      _Matery  := TMyMatery.Create;
+     _Shaper  := TMyShaper.Create;
 
      InitCamera;
-     InitShaper;
      InitMatery;
+     InitShaper;
      InitViewer;
 end;
 
@@ -348,8 +348,8 @@ begin
      _Camera2.DisposeOf;
      _Camera3.DisposeOf;
      _Camera4.DisposeOf;
-     _Shaper .DisposeOf;
      _Matery .DisposeOf;
+     _Shaper .DisposeOf;
 end;
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -366,13 +366,13 @@ end;
 
 //------------------------------------------------------------------------------
 
-procedure TForm1.GLView4MouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Single);
+procedure TForm1.GLViewer4MouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Single);
 begin
      _MouseS := Shift;
      _MouseP := TSingle2D.Create( X, Y );
 end;
 
-procedure TForm1.GLView4MouseMove(Sender: TObject; Shift: TShiftState; X, Y: Single);
+procedure TForm1.GLViewer4MouseMove(Sender: TObject; Shift: TShiftState; X, Y: Single);
 var
    P :TSingle2D;
    S :TMyShaperData;
@@ -391,18 +391,18 @@ begin
 
           _Shaper.Data := S;
 
-          GLView1.Repaint;
-          GLView2.Repaint;
-          GLView3.Repaint;
-          GLView4.Repaint;
+          GLViewer1.Repaint;
+          GLViewer2.Repaint;
+          GLViewer3.Repaint;
+          GLViewer4.Repaint;
 
           _MouseP := P;
      end;
 end;
 
-procedure TForm1.GLView4MouseUp(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Single);
+procedure TForm1.GLViewer4MouseUp(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Single);
 begin
-     GLView4MouseMove( Sender, Shift, X, Y );
+     GLViewer4MouseMove( Sender, Shift, X, Y );
 
      _MouseS := [];
 end;
