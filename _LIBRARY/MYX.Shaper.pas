@@ -171,7 +171,7 @@ begin
 
      //_Eles.Draw;
      glEnable(GL_PROGRAM_POINT_SIZE);
-     glDrawArrays( GL_POINTS, 0, _Poss.Count{点数} );
+     glDrawArrays( GL_POINTS, 0, _PosBuf.Count{点数} );
 end;
 
 //------------------------------------------------------------------------------
