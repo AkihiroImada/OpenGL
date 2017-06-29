@@ -1,15 +1,15 @@
-﻿unit LUX.GPU.OpenGL.GLView;
+﻿unit LUX.GPU.OpenGL.Viewer;
 
 interface
 
 uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes,
   Vcl.Graphics, Vcl.Controls, Vcl.Forms, Vcl.Dialogs,
-  Winapi.OpenGL,
-  LUX, LUX.GPU.OpenGL, LUX.GPU.OpenGL.VCL, LUX.GPU.OpenGL.Geometry;
+  Winapi.OpenGL, Winapi.OpenGLext,
+  LUX, LUX.M4, LUX.GPU.OpenGL, LUX.GPU.OpenGL.VCL, LUX.GPU.OpenGL.Buffer.Unifor, LUX.GPU.OpenGL.Camera;
 
 type
-  TGLView = class(TFrame)
+  TGLViewer = class(TFrame)
   private
     { Private 宣言 }
     ///// メソッドU
@@ -17,6 +17,7 @@ type
     procedure WMEraseBkgnd( var Message_:TWmEraseBkgnd ); message WM_ERASEBKGND;
   protected
     _DC     :HDC;
+    _Viewer :TGLUnifor<TSingleM4>;
     _Camera :TGLCamera;
     ///// イベント
     _OnPaint :TProc;
@@ -51,12 +52,12 @@ implementation //###############################################################
 
 /////////////////////////////////////////////////////////////////////// メソッド
 
-procedure TGLView.WMEraseBkgnd( var Message_:TWmEraseBkgnd );
+procedure TGLViewer.WMEraseBkgnd( var Message_:TWmEraseBkgnd );
 begin
      ///// 背景描画を無効化
 end;
 
-procedure TGLView.WMPaint( var Message_:TWMPaint );
+procedure TGLViewer.WMPaint( var Message_:TWMPaint );
 begin
      inherited;
 
@@ -75,23 +76,31 @@ end;
 
 /////////////////////////////////////////////////////////////////////// メソッド
 
-procedure TGLView.Resize;
+procedure TGLViewer.Resize;
 begin
      inherited;
 
-     Self.Repaint;
+     if not( csDestroying in ComponentState ) then
+     begin
+          if Height < Width then _Viewer[ 0 ] := TSingleM4.Scale( Height / Width, 1, 1 )
+                            else
+          if Width < Height then _Viewer[ 0 ] := TSingleM4.Scale( 1, Width / Height, 1 )
+                            else _Viewer[ 0 ] := TSingleM4.Identify;
+
+          Self.Repaint;
+     end;
 end;
 
 //------------------------------------------------------------------------------
 
-procedure TGLView.CreateWnd;
+procedure TGLViewer.CreateWnd;
 begin
      inherited;
 
      CreateDC;
 end;
 
-procedure TGLView.DestroyWnd;
+procedure TGLViewer.DestroyWnd;
 begin
      DestroyDC;
 
@@ -100,31 +109,36 @@ end;
 
 //------------------------------------------------------------------------------
 
-procedure TGLView.CreateDC;
+procedure TGLViewer.CreateDC;
 begin
      _DC := GetDC( Handle );
 
      _OpenGL_.ApplyPixelFormat( _DC );
 end;
 
-procedure TGLView.DestroyDC;
+procedure TGLViewer.DestroyDC;
 begin
      ReleaseDC( Handle, _DC );
 end;
 
 //&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&& public
 
-constructor TGLView.Create( AOwner_:TComponent );
+constructor TGLViewer.Create( AOwner_:TComponent );
 begin
      inherited;
 
      _OnPaint := procedure begin end;
 
      CreateDC;
+
+     _Viewer := TGLUnifor<TSingleM4>.Create( GL_DYNAMIC_DRAW );
+     _Viewer.Count := 1;
 end;
 
-destructor TGLView.Destroy;
+destructor TGLViewer.Destroy;
 begin
+     _Viewer.DisposeOf;
+
      DestroyDC;
 
      inherited;
@@ -132,21 +146,21 @@ end;
 
 /////////////////////////////////////////////////////////////////////// メソッド
 
-procedure TGLView.RecreateDC;
+procedure TGLViewer.RecreateDC;
 begin
      Self.RecreateWnd;
 end;
 
 //------------------------------------------------------------------------------
 
-procedure TGLView.BeginGL;
+procedure TGLViewer.BeginGL;
 begin
      _OpenGL_.EndGL;
 
        wglMakeCurrent( _DC, _OpenGL_.RC );
 end;
 
-procedure TGLView.EndGL;
+procedure TGLViewer.EndGL;
 begin
        wglMakeCurrent( _DC, 0 );
 
@@ -155,17 +169,21 @@ end;
 
 //------------------------------------------------------------------------------
 
-procedure TGLView.BeginRender;
+procedure TGLViewer.BeginRender;
 begin
      BeginGL;
 
        glClearColor( 0, 0, 0, 0 );
 
        glClear( GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT );
+
+       _Viewer.Use( 0{BinP} );
 end;
 
-procedure TGLView.EndRender;
+procedure TGLViewer.EndRender;
 begin
+       _Viewer.Unuse( 0{BinP} );
+
        glFlush;
 
        SwapBuffers( _DC );
