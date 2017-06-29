@@ -298,6 +298,9 @@ begin
           _Camera1.Use;
           _Matery .Use;
           _Shaper .Draw;
+          // 増やすなら以下のように
+          //_Matery2.Use;
+          //_Shaper.Draw;
      end;
 
      GLView2.OnPaint := procedure
@@ -372,6 +375,7 @@ begin
      _MouseP := TSingle2D.Create( X, Y );
 end;
 
+// TODO  物体でなくカメラを回す 回転は前からかける
 procedure TForm1.GLView4MouseMove(Sender: TObject; Shift: TShiftState; X, Y: Single);
 var
    P :TSingle2D;
