@@ -56,11 +56,15 @@ type
     _Camera3 :TMyCamera;
     _Camera4 :TMyCamera;
     _Matery  :TMyMatery;
+    _Matery2 :TMyMatery;
     _Shaper  :TMyShaper;
-    ///// メソッド
+    _Shaper2 :TMyShaper;
+    /// メソッド
     procedure InitCamera;
     procedure InitMatery;
+    procedure InitMatery2;
     procedure InitShaper;
+    procedure InitShaper2;
     procedure InitViewer;
   end;
 
@@ -194,6 +198,50 @@ begin
      end;
 end;
 
+procedure TForm1.InitMatery2;
+begin
+     with _Matery2 do
+     begin
+          with ShaderV do
+          begin
+               OnCompiled := procedure
+               begin
+                    MemoSVE.Lines.Assign( Errors );
+
+                    _Matery2.Engine.Link;
+               end;
+
+               Source.LoadFromFile( '..\..\_DATA\ShaderV.glsl' );
+
+               MemoSVS.Lines.Assign( Source );
+          end;
+
+          with ShaderF do
+          begin
+               OnCompiled := procedure
+               begin
+                    MemoSFE.Lines.Assign( Errors );
+
+                    _Matery2.Engine.Link;
+               end;
+
+               Source.LoadFromFile( '..\..\_DATA\ShaderF.glsl' );
+
+               MemoSFS.Lines.Assign( Source );
+          end;
+
+          with Engine do
+          begin
+               OnLinked := procedure
+               begin
+                    MemoP.Lines.Assign( Errors );
+               end;
+          end;
+
+          Imager.LoadFromFile( '..\..\_DATA\Spherical_1024x1024.png' );
+     end;
+end;
+
 //------------------------------------------------------------------------------
 
 function BraidedTorus( const T_:TdSingle2D ) :TdSingle3D;
@@ -289,6 +337,25 @@ begin
      end;
 end;
 
+procedure TForm1.InitShaper2;
+var
+   S :TMyShaperData;
+begin
+     with _Shaper2 do
+     begin
+          //LoadFormFunc( Apple, 1300, 100 );
+          // 天球を出そうとしたらリンゴが消えてしまった...
+          LoadFormFunc( BraidedTorus, 1000, 100);
+
+          with S do
+          begin
+               Pose := TSingleM4.Identify;
+          end;
+
+          Data := S;
+     end;
+end;
+
 //------------------------------------------------------------------------------
 
 procedure TForm1.InitViewer;
@@ -298,6 +365,8 @@ begin
           _Camera1.Use;
           _Matery .Use;
           _Shaper .Draw;
+          _Matery2.Use;
+          _Shaper2 .Draw;
      end;
 
      GLViewer2.OnPaint := procedure
@@ -305,6 +374,8 @@ begin
           _Camera2.Use;
           _Matery .Use;
           _Shaper .Draw;
+          _Matery2.Use;
+          _Shaper2 .Draw;
      end;
 
      GLViewer3.OnPaint := procedure
@@ -312,6 +383,9 @@ begin
           _Camera3.Use;
           _Matery .Use;
           _Shaper .Draw;
+          _Matery2.Use;
+          _Shaper2 .Draw;
+
      end;
 
      GLViewer4.OnPaint := procedure
@@ -319,6 +393,8 @@ begin
           _Camera4.Use;
           _Matery .Use;
           _Shaper .Draw;
+          _Matery2.Use;
+          _Shaper2 .Draw;
      end;
 end;
 
@@ -334,11 +410,15 @@ begin
      _Camera3 := TMyCamera.Create;
      _Camera4 := TMyCamera.Create;
      _Matery  := TMyMatery.Create;
+     _Matery2 := TMyMatery.Create;
      _Shaper  := TMyShaper.Create;
+     _Shaper2 := TMyShaper.Create;
 
      InitCamera;
      InitMatery;
+     InitMatery2;
      InitShaper;
+     InitShaper2;
      InitViewer;
 end;
 
