@@ -66,6 +66,7 @@ type //$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
        property EleBuf :TGLElemerTria32       read _EleBuf;
        ///// メソッド
        procedure Draw; override;
+       procedure DrawPoint;
        procedure LoadFormFunc( const Func_:TConstFunc<TdSingle2D,TdSingle3D>; const DivX_,DivY_:Integer );
      end;
 
@@ -168,9 +169,20 @@ begin
      _PosBuf.Use( 0{BinP} );
      _NorBuf.Use( 1{BinP} );
      _TexBuf.Use( 2{BinP} );
+     _EleBuf.Draw;
+end;
 
-     //_Eles.Draw;
-     glEnable(GL_PROGRAM_POINT_SIZE);
+procedure TMyShaper.DrawPoint;
+begin
+     inherited Draw;
+
+     _PosBuf.Use( 0{BinP} );
+     _NorBuf.Use( 1{BinP} );
+     _TexBuf.Use( 2{BinP} );
+
+     //glEnable(GL_PROGRAM_POINT_SIZE);
+     glEnable(GL_VERTEX_PROGRAM_POINT_SIZE);
+     glEnable(GL_POINT_SPRITE);
      glDrawArrays( GL_POINTS, 0, _PosBuf.Count{点数} );
 end;
 

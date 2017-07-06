@@ -58,6 +58,7 @@ out vec4 _FramerCol;
 
 void main()
 {
+  if(length(gl_PointCoord * 2.0 -1.0f) > 0.4) discard;
   vec4 C = _Camera.Pose * vec4( 0, 0, 0, 1 );
   vec4 V = normalize( _Sender.Pos - C );
   vec4 R = reflect( V, normalize( _Sender.Nor ) );

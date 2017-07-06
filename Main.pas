@@ -324,7 +324,7 @@ var
 begin
      with _Shaper do
      begin
-          LoadFormFunc( Apple, 1300, 100 );
+          LoadFormFunc( Apple, 300, 100 );
           // 天球を出そうとしたらリンゴが消えてしまった...
           //LoadFormFunc( SkyBox, 4, 2);
 
@@ -364,7 +364,7 @@ begin
      begin
           _Camera1.Use;
           _Matery .Use;
-          _Shaper .Draw;
+          _Shaper .DrawPoint;
           _Matery2.Use;
           _Shaper2 .Draw;
      end;
@@ -373,7 +373,7 @@ begin
      begin
           _Camera2.Use;
           _Matery .Use;
-          _Shaper .Draw;
+          _Shaper .DrawPoint;
           _Matery2.Use;
           _Shaper2 .Draw;
      end;
@@ -382,7 +382,7 @@ begin
      begin
           _Camera3.Use;
           _Matery .Use;
-          _Shaper .Draw;
+          _Shaper .DrawPoint;
           _Matery2.Use;
           _Shaper2 .Draw;
 
@@ -392,7 +392,7 @@ begin
      begin
           _Camera4.Use;
           _Matery .Use;
-          _Shaper .Draw;
+          _Shaper .DrawPoint;
           _Matery2.Use;
           _Shaper2 .Draw;
      end;
