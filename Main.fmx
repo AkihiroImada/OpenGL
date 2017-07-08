@@ -20,7 +20,7 @@ object Form1: TForm1
     Size.Width = 730.000000000000000000
     Size.Height = 556.000000000000000000
     Size.PlatformDefault = False
-    TabIndex = 0
+    TabIndex = 1
     TabOrder = 3
     TabPosition = PlatformDefault
     Sizes = (
@@ -34,7 +34,7 @@ object Form1: TForm1
       CustomIcon = <
         item
         end>
-      IsSelected = True
+      IsSelected = False
       Size.Width = 46.000000000000000000
       Size.Height = 26.000000000000000000
       Size.PlatformDefault = False
@@ -43,79 +43,74 @@ object Form1: TForm1
       Text = 'View'
       ExplicitSize.cx = 46.000000000000000000
       ExplicitSize.cy = 26.000000000000000000
-      object Rectangle1: TRectangle
-        Align = Left
-        Fill.Kind = None
-        Margins.Left = 5.000000000000000000
-        Margins.Top = 5.000000000000000000
-        Margins.Bottom = 5.000000000000000000
-        Position.X = 5.000000000000000000
-        Position.Y = 5.000000000000000000
-        Size.Width = 310.000000000000000000
-        Size.Height = 520.000000000000000000
-        Size.PlatformDefault = False
-        Stroke.Kind = None
-        inline GLViewer1: TGLViewer
-          Align = Top
-          Margins.Left = 5.000000000000000000
-          Margins.Top = 5.000000000000000000
-          Margins.Right = 5.000000000000000000
-          Margins.Bottom = 5.000000000000000000
-          Position.X = 5.000000000000000000
-          Position.Y = 5.000000000000000000
-          Size.Width = 300.000000000000000000
-          Size.Height = 300.000000000000000000
-          Size.PlatformDefault = False
-          OnDblClick = GLViewer1DblClick
-        end
-        inline GLViewer2: TGLViewer
-          Align = Client
-          Margins.Left = 5.000000000000000000
-          Margins.Top = 5.000000000000000000
-          Margins.Right = 5.000000000000000000
-          Margins.Bottom = 5.000000000000000000
-          Size.Width = 300.000000000000000000
-          Size.Height = 200.000000000000000000
-          Size.PlatformDefault = False
-          OnDblClick = GLViewer2DblClick
-        end
-      end
       object Rectangle2: TRectangle
         Align = Client
         Fill.Kind = None
+        Margins.Left = 5.000000000000000000
         Margins.Top = 5.000000000000000000
         Margins.Right = 5.000000000000000000
         Margins.Bottom = 5.000000000000000000
-        Size.Width = 410.000000000000000000
+        Size.Width = 720.000000000000000000
         Size.Height = 520.000000000000000000
         Size.PlatformDefault = False
         Stroke.Kind = None
-        inline GLViewer3: TGLViewer
-          Align = Top
-          Margins.Left = 5.000000000000000000
-          Margins.Top = 5.000000000000000000
-          Margins.Right = 5.000000000000000000
-          Margins.Bottom = 5.000000000000000000
-          Position.X = 5.000000000000000000
-          Position.Y = 5.000000000000000000
-          Size.Width = 400.000000000000000000
-          Size.Height = 200.000000000000000000
-          Size.PlatformDefault = False
-          OnDblClick = GLViewer3DblClick
-        end
         inline GLViewer4: TGLViewer
-          Align = Client
+          Align = Contents
           Margins.Left = 5.000000000000000000
           Margins.Top = 5.000000000000000000
-          Margins.Right = 5.000000000000000000
-          Margins.Bottom = 5.000000000000000000
-          Size.Width = 400.000000000000000000
-          Size.Height = 300.000000000000000000
+          Margins.Right = 115.000000000000000000
+          Margins.Bottom = 65.000000000000000000
+          Size.Width = 600.000000000000000000
+          Size.Height = 450.000000000000000000
           Size.PlatformDefault = False
           OnDblClick = GLViewer4DblClick
           OnMouseDown = GLViewer4MouseDown
           OnMouseMove = GLViewer4MouseMove
           OnMouseUp = GLViewer4MouseUp
+          OnMouseWheel = GLViewer4MouseWheel
+        end
+        object Rectangle1: TRectangle
+          Position.X = 616.000000000000000000
+          Position.Y = 8.000000000000000000
+          Size.Width = 105.000000000000000000
+          Size.Height = 33.000000000000000000
+          Size.PlatformDefault = False
+          object Label1: TLabel
+            Align = Right
+            Position.X = 56.000000000000000000
+            Size.Width = 49.000000000000000000
+            Size.Height = 33.000000000000000000
+            Size.PlatformDefault = False
+            Text = '10'
+            TabOrder = 0
+          end
+          object Distance: TLabel
+            Align = MostLeft
+            Margins.Left = 5.000000000000000000
+            Position.X = 5.000000000000000000
+            Size.Width = 49.000000000000000000
+            Size.Height = 33.000000000000000000
+            Size.PlatformDefault = False
+            Text = 'Distance'
+            TabOrder = 1
+          end
+        end
+        object Memo1: TMemo
+          Touch.InteractiveGestures = [Pan, LongTap, DoubleTap]
+          DataDetectorTypes = []
+          Align = MostBottom
+          Margins.Left = 5.000000000000000000
+          Margins.Top = 5.000000000000000000
+          Margins.Right = 5.000000000000000000
+          Margins.Bottom = 5.000000000000000000
+          Position.X = 5.000000000000000000
+          Position.Y = 466.000000000000000000
+          Size.Width = 710.000000000000000000
+          Size.Height = 49.000000000000000000
+          Size.PlatformDefault = False
+          TabOrder = 1
+          Viewport.Width = 706.000000000000000000
+          Viewport.Height = 45.000000000000000000
         end
       end
     end
@@ -123,7 +118,7 @@ object Form1: TForm1
       CustomIcon = <
         item
         end>
-      IsSelected = False
+      IsSelected = True
       Size.Width = 57.000000000000000000
       Size.Height = 26.000000000000000000
       Size.PlatformDefault = False
@@ -178,8 +173,8 @@ object Form1: TForm1
             Size.Height = 100.000000000000000000
             Size.PlatformDefault = False
             TabOrder = 0
-            Viewport.Width = 690.000000000000000000
-            Viewport.Height = 100.000000000000000000
+            Viewport.Width = 686.000000000000000000
+            Viewport.Height = 96.000000000000000000
           end
           object MemoSVS: TMemo
             Touch.InteractiveGestures = [Pan, LongTap, DoubleTap]
@@ -195,8 +190,8 @@ object Form1: TForm1
             Size.Height = 354.000000000000000000
             Size.PlatformDefault = False
             TabOrder = 1
-            Viewport.Width = 690.000000000000000000
-            Viewport.Height = 354.000000000000000000
+            Viewport.Width = 686.000000000000000000
+            Viewport.Height = 350.000000000000000000
           end
           object SplitterSV: TSplitter
             Align = Bottom
@@ -238,8 +233,8 @@ object Form1: TForm1
             Size.Height = 100.000000000000000000
             Size.PlatformDefault = False
             TabOrder = 0
-            Viewport.Width = 690.000000000000000000
-            Viewport.Height = 100.000000000000000000
+            Viewport.Width = 686.000000000000000000
+            Viewport.Height = 96.000000000000000000
           end
           object MemoSFS: TMemo
             Touch.InteractiveGestures = [Pan, LongTap, DoubleTap]
@@ -255,8 +250,8 @@ object Form1: TForm1
             Size.Height = 354.000000000000000000
             Size.PlatformDefault = False
             TabOrder = 1
-            Viewport.Width = 690.000000000000000000
-            Viewport.Height = 354.000000000000000000
+            Viewport.Width = 686.000000000000000000
+            Viewport.Height = 350.000000000000000000
           end
           object SplitterSF: TSplitter
             Align = Bottom
@@ -299,8 +294,8 @@ object Form1: TForm1
         Size.Height = 510.000000000000000000
         Size.PlatformDefault = False
         TabOrder = 0
-        Viewport.Width = 710.000000000000000000
-        Viewport.Height = 510.000000000000000000
+        Viewport.Width = 706.000000000000000000
+        Viewport.Height = 506.000000000000000000
       end
     end
   end

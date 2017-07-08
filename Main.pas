@@ -17,11 +17,7 @@ type
   TForm1 = class(TForm)
     TabControl1: TTabControl;
       TabItemV: TTabItem;
-        Rectangle1: TRectangle;
-          GLViewer1: TGLViewer;
-          GLViewer2: TGLViewer;
         Rectangle2: TRectangle;
-          GLViewer3: TGLViewer;
           GLViewer4: TGLViewer;
       TabItemS: TTabItem;
         TabControlS: TTabControl;
@@ -35,22 +31,26 @@ type
             MemoSFE: TMemo;
       TabItemP: TTabItem;
         MemoP: TMemo;
+    Memo1: TMemo;
+    Distance: TLabel;
+    Label1: TLabel;
+    Rectangle1: TRectangle;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
-    procedure GLViewer1DblClick(Sender: TObject);
-    procedure GLViewer2DblClick(Sender: TObject);
-    procedure GLViewer3DblClick(Sender: TObject);
     procedure GLViewer4DblClick(Sender: TObject);
     procedure GLViewer4MouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Single);
     procedure GLViewer4MouseMove(Sender: TObject; Shift: TShiftState; X, Y: Single);
     procedure GLViewer4MouseUp(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Single);
     procedure MemoSVSChangeTracking(Sender: TObject);
     procedure MemoSFSChangeTracking(Sender: TObject);
+    procedure GLViewer4MouseWheel(Sender: TObject; Shift: TShiftState;
+      WheelDelta: Integer; var Handled: Boolean);
   private
     { private 宣言 }
     _MouseA :TSingle2D;
     _MouseS :TShiftState;
     _MouseP :TSingle2D;
+    _WheelTotal :Integer;
     ///// メソッド
     procedure EditShader( const Shader_:TGLShader; const Memo_:TMemo );
   public
@@ -118,39 +118,8 @@ var
 begin
      with C do
      begin
-          Proj := TSingleM4.ProjOrth( -2.5, +2.5, -2.5, +2.5, _N, _F );
-
-          Pose := TSingleM4.Translate( 0, +5, 0 )
-                * TSingleM4.RotateX( DegToRad( -90 ) );
-     end;
-
-     _Camera1.Data := C;
-
-     with C do
-     begin
-          Proj := TSingleM4.ProjOrth( -2, +2, -2, +2, _N, _F );
-
-          Pose := TSingleM4.RotateX( DegToRad( -45 ) )
-                * TSingleM4.Translate( 0, 0, +5 );
-     end;
-
-     _Camera2.Data := C;
-
-     with C do
-     begin
-          Proj := TSingleM4.ProjOrth( -1.5, +1.5, -1.5, +1.5, _N, _F );
-
-          Pose := TSingleM4.Translate( 0, 0, +5 );
-     end;
-
-     _Camera3.Data := C;
-
-     with C do
-     begin
           Proj := TSingleM4.ProjPers( -_N/2, +_N/2, -_N/2, +_N/2, _N, _F );
-
-          Pose := TSingleM4.RotateX( DegToRad( -45 ) )
-                * TSingleM4.Translate( 0, 0, +4 );
+          Pose := TsingleM4.Translate(0, 0, +10);
      end;
 
      _Camera4.Data := C;
@@ -217,7 +186,6 @@ begin
 
                Source.LoadFromFile( '..\..\_DATA\ShaderV.glsl' );
 
-               MemoSVS.Lines.Assign( Source );
           end;
 
           with ShaderF do
@@ -229,9 +197,8 @@ begin
                     _Matery2.Engine.Link;
                end;
 
-               Source.LoadFromFile( '..\..\_DATA\ShaderF.glsl' );
+               Source.LoadFromFile( '..\..\_DATA\ShaderF_Skybox.glsl' );
 
-               MemoSFS.Lines.Assign( Source );
           end;
 
           with Engine do
@@ -242,7 +209,7 @@ begin
                end;
           end;
 
-          Imager.LoadFromFile( '..\..\_DATA\Spherical_1024x1024.png' );
+          Imager.LoadFromFile( '..\..\_DATA\Milkyway_BG.png' );
      end;
 end;
 
@@ -308,14 +275,18 @@ end;
 // どうすれば法線は常に内向きになる?
 function SkyBox(const T_:TdSingle2D):TdSingle3D;
 const SCALE = 500;
+var
+  U : TdSingle;
+  V : TdSingle;
 begin
+  U := (2*T_.U - 1) * PI;
+  V := (2*T_.V - 1) * PI;
   with Result do
   begin
-    if(T_.U < 2 ) then X := T_.U;
-    if(T_.U >= 2) then X := T_.U -2;
-    if (T_.U < 2) then Y := 0;
-    if (T_.U >=2) then Y := 1;
-    Z := T_.V;
+    X := Cos(U)*Cos(V);
+    Y := Sin(U)*Cos(V);
+    Z := Sin(V);
+
     X := X*SCALE;
     Y := Y*SCALE;
     Z := Z*SCALE;
@@ -328,13 +299,11 @@ var
 begin
      with _Shaper do
      begin
-          LoadFormFunc( Apple, 300, 100 );
-          // 天球を出そうとしたらリンゴが消えてしまった...
-          //LoadFormFunc( SkyBox, 4, 2);
+          LoadFormFunc( Apple, 1000, 1000 );
 
           with S do
           begin
-               Pose := TSingleM4.Identify;
+               Pose := TSingleM4.Identify * TSingleM4.RotateX(1.5*PI);
           end;
 
           Data := S;
@@ -347,9 +316,8 @@ var
 begin
      with _Shaper2 do
      begin
-          //LoadFormFunc( Apple, 1300, 100 );
-          // 天球を出そうとしたらリンゴが消えてしまった...
-          LoadFormFunc( BraidedTorus, 1000, 100);
+          //LoadFormFunc( BraidedTorus, 1000, 100);
+          LoadFormFunc(Skybox, 100,100);
 
           with S do
           begin
@@ -364,34 +332,6 @@ end;
 
 procedure TForm1.InitViewer;
 begin
-     GLViewer1.OnPaint := procedure
-     begin
-          _Camera1.Use;
-          _Matery .Use;
-          _Shaper .DrawPoint;
-          _Matery2.Use;
-          _Shaper2 .Draw;
-     end;
-
-     GLViewer2.OnPaint := procedure
-     begin
-          _Camera2.Use;
-          _Matery .Use;
-          _Shaper .DrawPoint;
-          _Matery2.Use;
-          _Shaper2 .Draw;
-     end;
-
-     GLViewer3.OnPaint := procedure
-     begin
-          _Camera3.Use;
-          _Matery .Use;
-          _Shaper .DrawPoint;
-          _Matery2.Use;
-          _Shaper2 .Draw;
-
-     end;
-
      GLViewer4.OnPaint := procedure
      begin
           _Camera4.Use;
@@ -402,16 +342,13 @@ begin
      end;
 end;
 
-//&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+
 
 procedure TForm1.FormCreate(Sender: TObject);
 begin
      _MouseA := TSingle2D.Create( 0, 0 );
      _MouseS := [];
 
-     _Camera1 := TMyCamera.Create;
-     _Camera2 := TMyCamera.Create;
-     _Camera3 := TMyCamera.Create;
      _Camera4 := TMyCamera.Create;
      _Matery  := TMyMatery.Create;
      _Matery2 := TMyMatery.Create;
@@ -428,45 +365,15 @@ end;
 
 procedure TForm1.FormDestroy(Sender: TObject);
 begin
-     _Camera1.DisposeOf;
-     _Camera2.DisposeOf;
-     _Camera3.DisposeOf;
      _Camera4.DisposeOf;
      _Matery .DisposeOf;
+     _Matery2.DisposeOf;
      _Shaper .DisposeOf;
+     _Shaper2.DisposeOf;
 end;
 
 ////////////////////////////////////////////////////////////////////////////////
 
-procedure TForm1.GLViewer1DblClick(Sender: TObject);
-begin
-     with GLViewer1.MakeScreenShot do
-     begin
-          SaveToFile( 'Viewer1.png' );
-
-          DisposeOf;
-     end;
-end;
-
-procedure TForm1.GLViewer2DblClick(Sender: TObject);
-begin
-     with GLViewer2.MakeScreenShot do
-     begin
-          SaveToFile( 'Viewer2.png' );
-
-          DisposeOf;
-     end;
-end;
-
-procedure TForm1.GLViewer3DblClick(Sender: TObject);
-begin
-     with GLViewer3.MakeScreenShot do
-     begin
-          SaveToFile( 'Viewer3.png' );
-
-          DisposeOf;
-     end;
-end;
 
 procedure TForm1.GLViewer4DblClick(Sender: TObject);
 begin
@@ -487,9 +394,12 @@ begin
 end;
 
 procedure TForm1.GLViewer4MouseMove(Sender: TObject; Shift: TShiftState; X, Y: Single);
+const
+     _N :Single = 0.1;
+     _F :Single = 1000;
 var
    P :TSingle2D;
-   S :TMyShaperData;
+   C :TMyCameraData;
 begin
      if ssLeft in _MouseS then
      begin
@@ -497,17 +407,16 @@ begin
 
           _MouseA := _MouseA + ( P - _MouseP );
 
-          with S do
+          with C do
           begin
+               Proj := TSingleM4.ProjPers( -_N/2, +_N/2, -_N/2, +_N/2, _N, _F );
                Pose := TSingleM4.RotateX( DegToRad( _MouseA.Y ) )
-                     * TSingleM4.RotateY( DegToRad( _MouseA.X ) );
+                     * TSingleM4.RotateY( DegToRad( _MouseA.X ) )
+                     * TsingleM4.Translate(0, 0, +10+_WheelTotal);
           end;
 
-          _Shaper.Data := S;
+          _Camera4.Data := C;
 
-          GLViewer1.Repaint;
-          GLViewer2.Repaint;
-          GLViewer3.Repaint;
           GLViewer4.Repaint;
 
           _MouseP := P;
@@ -519,6 +428,27 @@ begin
      GLViewer4MouseMove( Sender, Shift, X, Y );
 
      _MouseS := [];
+end;
+
+procedure TForm1.GLViewer4MouseWheel(Sender: TObject; Shift: TShiftState;
+  WheelDelta: Integer; var Handled: Boolean);
+const
+  _N :Single = 0.1;
+  _F :Single = 1000;
+var
+  C :TMyCameraData;
+begin
+  _WheelTotal := _WheelTotal - WheelDelta div 120;
+  Label1.Text := (10+_WheelTotal).ToString;
+  with C do
+  begin
+    Proj := TSingleM4.ProjPers( -_N/2, +_N/2, -_N/2, +_N/2, _N, _F );
+    Pose := TSingleM4.RotateX( DegToRad( _MouseA.Y ) )
+    * TSingleM4.RotateY( DegToRad( _MouseA.X ) )
+    * TsingleM4.Translate(0, 0, +10+_WheelTotal);
+  end;
+  _Camera4.Data := C;
+  GLViewer4.Repaint;
 end;
 
 //------------------------------------------------------------------------------
