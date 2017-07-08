@@ -70,6 +70,7 @@ type
     procedure InitShaper;
     procedure InitShaper2;
     procedure InitViewer;
+    procedure ReconsractShaper;
   end;
 
 var
@@ -140,7 +141,7 @@ begin
                     _Matery.Engine.Link;
                end;
 
-               Source.LoadFromFile( '..\..\_DATA\ShaderV.glsl' );
+               Source.LoadFromFile( '..\..\_DATA\ShaderV_Random.glsl' );
 
                MemoSVS.Lines.Assign( Source );
           end;
@@ -299,7 +300,23 @@ var
 begin
      with _Shaper do
      begin
-          LoadFormFunc( Apple, 1000, 1000 );
+          LoadFormFuncRandomize( Apple, 1000, 1000 );
+
+          with S do
+          begin
+               Pose := TSingleM4.Identify * TSingleM4.RotateX(1.5*PI);
+          end;
+
+          Data := S;
+     end;
+end;
+procedure TForm1.ReconsractShaper;
+var
+   S :TMyShaperData;
+begin
+     with _Shaper do
+     begin
+          LoadFormFuncRandomize( Apple, 1000, 1000 );
 
           with S do
           begin
@@ -426,7 +443,6 @@ end;
 procedure TForm1.GLViewer4MouseUp(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Single);
 begin
      GLViewer4MouseMove( Sender, Shift, X, Y );
-
      _MouseS := [];
 end;
 

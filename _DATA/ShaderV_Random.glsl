@@ -22,6 +22,8 @@ _Shaper;
 
 ////////////////////////////////////////////////////////////////////////////////【入出力】
 
+uniform sampler2D _Imager;
+
 in vec4 _VerterPos;
 in vec4 _VerterNor;
 in vec2 _VerterTex;
@@ -43,7 +45,9 @@ void main()
   _Result.Pos =                     _Shaper.Pose     * _VerterPos;
   _Result.Nor = transpose( inverse( _Shaper.Pose ) ) * _VerterNor;
   _Result.Tex =                                        _VerterTex;
-  gl_Position = _ViewerScal * _Camera.Proj * inverse( _Camera.Pose ) * _Result.Pos;
+  //vec4 C = texture( _Imager, _VerterTex );
+  vec4 Offseted = _Result.Pos + normalize(_VerterNor);
+  gl_Position = _ViewerScal * _Camera.Proj * inverse( _Camera.Pose ) * Offseted;
 }
 
 //##############################################################################

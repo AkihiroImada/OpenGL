@@ -68,6 +68,7 @@ type //$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
        procedure Draw; override;
        procedure DrawPoint;
        procedure LoadFormFunc( const Func_:TConstFunc<TdSingle2D,TdSingle3D>; const DivX_,DivY_:Integer );
+       procedure LoadFormFuncRandomize( const Func_:TConstFunc<TdSingle2D,TdSingle3D>; const DivX_,DivY_:Integer );
      end;
 
 //const //$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$【定数】
@@ -175,7 +176,6 @@ end;
 procedure TMyShaper.DrawPoint;
 begin
      inherited Draw;
-
      _PosBuf.Use( 0{BinP} );
      _NorBuf.Use( 1{BinP} );
      _TexBuf.Use( 2{BinP} );
@@ -189,6 +189,95 @@ end;
 //------------------------------------------------------------------------------
 
 procedure TMyShaper.LoadFormFunc( const Func_:TConstFunc<TdSingle2D,TdSingle3D>; const DivX_,DivY_:Integer );
+//······························
+     function XYtoI( const X_,Y_:Integer ) :Integer;
+     begin
+          Result := ( DivX_ + 1 ) * Y_ + X_;
+     end;
+     //·························
+     procedure MakeVerts;
+     var
+        C, X, Y, I :Integer;
+        Ps, Ns :TGLBufferData<TSingle3D>;
+        Ts :TGLBufferData<TSingle2D>;
+        T :TSingle2D;
+        M :TSingleM4;
+     begin
+          C := ( DivY_ + 1 ) * ( DivX_ + 1 );
+
+          _PosBuf.Count := C;
+          _NorBuf.Count := C;
+          _TexBuf.Count := C;
+
+          Ps := _PosBuf.Map( GL_WRITE_ONLY );
+          Ns := _NorBuf.Map( GL_WRITE_ONLY );
+          Ts := _TexBuf.Map( GL_WRITE_ONLY );
+
+          for Y := 0 to DivY_ do
+          begin
+               T.V := Y / DivY_;
+               for X := 0 to DivX_ do
+               begin
+                    T.U := X / DivX_;
+
+                    I := XYtoI( X, Y );
+
+                    Ts[ I ] := T;
+
+                    M := Tensor( T, Func_ );
+
+                    Ps[ I ] := M.AxisP;
+                    //Ts[I] := M.AxisX;
+                    //Bs[I] := M.AxisY;
+                    Ns[ I ] := M.AxisZ;
+               end;
+          end;
+
+          _PosBuf.Unmap;
+          _NorBuf.Unmap;
+          _TexBuf.Unmap;
+     end;
+     //·························
+     procedure MakeElems;
+     var
+        X0, Y0, X1, Y1, I, I00, I01, I10, I11 :Integer;
+        Es :TGLBufferData<TCardinal3D>;
+     begin
+          _EleBuf.Count := 2 * DivY_ * DivX_;
+
+          Es := _EleBuf.Map( GL_WRITE_ONLY );
+
+          I := 0;
+          for Y0 := 0 to DivY_-1 do
+          begin
+               Y1 := Y0 + 1;
+               for X0 := 0 to DivX_-1 do
+               begin
+                    X1 := X0 + 1;
+
+                    I00 := XYtoI( X0, Y0 );  I01 := XYtoI( X1, Y0 );
+                    I10 := XYtoI( X0, Y1 );  I11 := XYtoI( X1, Y1 );
+
+                    //  00───01
+                    //  │      │
+                    //  │      │
+                    //  │      │
+                    //  10───11
+
+                    Es[ I ] := TCardinal3D.Create( I11, I10, I00 );  Inc( I );
+                    Es[ I ] := TCardinal3D.Create( I11, I00, I01 );  Inc( I );
+               end;
+          end;
+
+          _EleBuf.Unmap;
+     end;
+//······························
+begin
+     MakeVerts;
+     MakeElems;
+end;
+
+procedure TMyShaper.LoadFormFuncRandomize( const Func_:TConstFunc<TdSingle2D,TdSingle3D>; const DivX_,DivY_:Integer );
 //······························
      function XYtoI( const X_,Y_:Integer ) :Integer;
      begin
