@@ -20,7 +20,7 @@ object Form1: TForm1
     Size.Width = 730.000000000000000000
     Size.Height = 556.000000000000000000
     Size.PlatformDefault = False
-    TabIndex = 0
+    TabIndex = 1
     TabOrder = 3
     TabPosition = PlatformDefault
     Sizes = (
@@ -34,7 +34,7 @@ object Form1: TForm1
       CustomIcon = <
         item
         end>
-      IsSelected = True
+      IsSelected = False
       Size.Width = 46.000000000000000000
       Size.Height = 26.000000000000000000
       Size.PlatformDefault = False
@@ -128,8 +128,9 @@ object Form1: TForm1
           end
           object Rectangle3: TRectangle
             Align = MostTop
+            Margins.Top = 5.000000000000000000
             Position.X = 5.000000000000000000
-            Position.Y = 41.000000000000000000
+            Position.Y = 46.000000000000000000
             Size.Width = 107.000000000000000000
             Size.Height = 64.000000000000000000
             Size.PlatformDefault = False
@@ -142,7 +143,6 @@ object Form1: TForm1
               Size.Height = 19.000000000000000000
               Size.PlatformDefault = False
               TabOrder = 0
-              Value = 0.500000000000000000
               OnChange = TrackBar1Change
             end
             object MessStrength: TLabel
@@ -168,17 +168,34 @@ object Form1: TForm1
               Size.Width = 97.000000000000000000
               Size.Height = 17.000000000000000000
               Size.PlatformDefault = False
-              Text = 'Label2'
+              TextSettings.HorzAlign = Trailing
+              Text = '0'
               TabOrder = 2
             end
           end
           object Rectangle5: TRectangle
             Align = MostTop
+            Margins.Top = 5.000000000000000000
             Position.X = 5.000000000000000000
-            Position.Y = 105.000000000000000000
+            Position.Y = 115.000000000000000000
             Size.Width = 107.000000000000000000
-            Size.Height = 96.000000000000000000
+            Size.Height = 94.000000000000000000
             Size.PlatformDefault = False
+            object Button1: TButton
+              Align = MostTop
+              Margins.Left = 5.000000000000000000
+              Margins.Top = 5.000000000000000000
+              Margins.Right = 5.000000000000000000
+              Margins.Bottom = 5.000000000000000000
+              Position.X = 5.000000000000000000
+              Position.Y = 64.000000000000000000
+              Size.Width = 97.000000000000000000
+              Size.Height = 22.000000000000000000
+              Size.PlatformDefault = False
+              TabOrder = 3
+              Text = 'Create'
+              OnClick = Button1Click
+            end
             object Label3: TLabel
               Align = MostTop
               Margins.Left = 5.000000000000000000
@@ -193,20 +210,23 @@ object Form1: TForm1
               Text = 'Animation'
               TabOrder = 0
             end
-            object Button1: TButton
+            object NumberBox1: TNumberBox
+              Touch.InteractiveGestures = [LongTap, DoubleTap]
               Align = MostTop
+              TabOrder = 1
+              Cursor = crIBeam
+              Max = 600.000000000000000000
+              Value = 180.000000000000000000
+              TextSettings.HorzAlign = Trailing
+              Position.X = 5.000000000000000000
+              Position.Y = 32.000000000000000000
               Margins.Left = 5.000000000000000000
               Margins.Top = 5.000000000000000000
               Margins.Right = 5.000000000000000000
               Margins.Bottom = 5.000000000000000000
-              Position.X = 5.000000000000000000
-              Position.Y = 32.000000000000000000
               Size.Width = 97.000000000000000000
               Size.Height = 22.000000000000000000
               Size.PlatformDefault = False
-              TabOrder = 1
-              Text = 'Play'
-              OnClick = Button1Click
             end
           end
         end
@@ -216,7 +236,7 @@ object Form1: TForm1
       CustomIcon = <
         item
         end>
-      IsSelected = False
+      IsSelected = True
       Size.Width = 57.000000000000000000
       Size.Height = 26.000000000000000000
       Size.PlatformDefault = False

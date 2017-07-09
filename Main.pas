@@ -12,7 +12,7 @@ uses
   MYX.Camera,
   MYX.Shaper,
   MYX.Matery,
-  System.Threading;
+  System.Threading, FMX.Edit, FMX.EditBox, FMX.NumberBox;
 
 type
   TForm1 = class(TForm)
@@ -44,6 +44,7 @@ type
     Rectangle5: TRectangle;
     Label3: TLabel;
     Button1: TButton;
+    NumberBox1: TNumberBox;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure GLViewer4DblClick(Sender: TObject);
@@ -56,7 +57,6 @@ type
       WheelDelta: Integer; var Handled: Boolean);
     procedure TrackBar1Change(Sender: TObject);
     procedure Button1Click(Sender: TObject);
-    procedure PlayAnimation;
   private
     { private 宣言 }
     _MouseA :TSingle2D;
@@ -97,41 +97,18 @@ uses System.Math;
 
 /////////////////////////////////////////////////////////////////////// メソッド
 
+/// アニメーションボタン
 procedure TForm1.Button1Click(Sender: TObject);
-var
- aTask : ITask;
-begin
- aTask := TTask.Create(procedure ()
-   const
-   FRAME_N : Integer = 180;
-   var
-   I : Integer;
-   rate : Single;
-   begin
-     for I := 0 to FRAME_N do
-     begin
-       rate := I.ToSingle / FRAME_N;
-       TrackBar1.Value := TrackBar1.Max * rate;
-       sleep(10);
-     end
-   end);
- aTask.Start;
-end;
-
-/// アニメーション実行
-procedure TForm1.PlayAnimation;
-const
-  FRAME_N : Integer = 180;
 var
   I : Integer;
   rate : Single;
 begin
-  for I := 0 to FRAME_N do
+  for I := 0 to Trunc(Numberbox1.Value) do
   begin
-    rate := I.ToSingle / FRAME_N;
+    rate := I.ToSingle / Trunc(Numberbox1.Value);
     TrackBar1.Value := TrackBar1.Max * rate;
-    sleep(10);
-  end
+    GLViewer4.MakeScreenShot.SaveToFile('animation\image'+I.ToString+'.png');
+  end;
 end;
 
 procedure TForm1.EditShader( const Shader_:TGLShader; const Memo_:TMemo );
@@ -294,7 +271,7 @@ begin
      end;
 end;
 
-// ここからリンゴ関数を書きます
+// リンゴ関数
 function Apple(const T_:TdSingle2D ) :TdSingle3D;
 const
   SCALE : Single = 0.3;
@@ -352,7 +329,7 @@ begin
           with S do
           begin
                Pose := TSingleM4.Identify * TSingleM4.RotateX(1.5*PI);
-               Strength := 0.5;
+               Strength := 0;
           end;
 
           Data := S;
@@ -367,10 +344,11 @@ begin
    Label2.Text := TTrackBar(Sender).Value.ToString;
     with S do
           begin
-               Pose := TSingleM4.Identify * TSingleM4.RotateX(1.5*PI);
-               Strength := TTrackBar(Sender).Value;
+               Pose := _Shaper.Data.Pose;
+               Strength := TrackBar1.Value;
           end;
    _Shaper.Data := S;
+   GLViewer4.Repaint;
 end;
 
 
@@ -380,8 +358,7 @@ var
 begin
      with _Shaper2 do
      begin
-          //LoadFormFunc( BraidedTorus, 1000, 100);
-          LoadFormFunc(Skybox, 100,100);
+          LoadFormFunc(Skybox, 4,4);
 
           with S do
           begin
