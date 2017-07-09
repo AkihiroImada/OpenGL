@@ -105,6 +105,7 @@ begin
           begin
                Add( 0{BinP}, '_FramerCol'{Name} );
           end;
+
      end;
 end;
 

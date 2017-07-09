@@ -11,7 +11,8 @@ uses
   LUX.GPU.OpenGL.Viewer, LUX.GPU.OpenGL.Shader,
   MYX.Camera,
   MYX.Shaper,
-  MYX.Matery;
+  MYX.Matery,
+  System.Threading;
 
 type
   TForm1 = class(TForm)
@@ -35,6 +36,14 @@ type
     Distance: TLabel;
     Label1: TLabel;
     Rectangle1: TRectangle;
+    Rectangle3: TRectangle;
+    TrackBar1: TTrackBar;
+    MessStrength: TLabel;
+    Label2: TLabel;
+    Rectangle4: TRectangle;
+    Rectangle5: TRectangle;
+    Label3: TLabel;
+    Button1: TButton;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure GLViewer4DblClick(Sender: TObject);
@@ -45,6 +54,9 @@ type
     procedure MemoSFSChangeTracking(Sender: TObject);
     procedure GLViewer4MouseWheel(Sender: TObject; Shift: TShiftState;
       WheelDelta: Integer; var Handled: Boolean);
+    procedure TrackBar1Change(Sender: TObject);
+    procedure Button1Click(Sender: TObject);
+    procedure PlayAnimation;
   private
     { private 宣言 }
     _MouseA :TSingle2D;
@@ -70,7 +82,6 @@ type
     procedure InitShaper;
     procedure InitShaper2;
     procedure InitViewer;
-    procedure ReconsractShaper;
   end;
 
 var
@@ -85,6 +96,43 @@ uses System.Math;
 //&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&& private
 
 /////////////////////////////////////////////////////////////////////// メソッド
+
+procedure TForm1.Button1Click(Sender: TObject);
+var
+ aTask : ITask;
+begin
+ aTask := TTask.Create(procedure ()
+   const
+   FRAME_N : Integer = 180;
+   var
+   I : Integer;
+   rate : Single;
+   begin
+     for I := 0 to FRAME_N do
+     begin
+       rate := I.ToSingle / FRAME_N;
+       TrackBar1.Value := TrackBar1.Max * rate;
+       sleep(10);
+     end
+   end);
+ aTask.Start;
+end;
+
+/// アニメーション実行
+procedure TForm1.PlayAnimation;
+const
+  FRAME_N : Integer = 180;
+var
+  I : Integer;
+  rate : Single;
+begin
+  for I := 0 to FRAME_N do
+  begin
+    rate := I.ToSingle / FRAME_N;
+    TrackBar1.Value := TrackBar1.Max * rate;
+    sleep(10);
+  end
+end;
 
 procedure TForm1.EditShader( const Shader_:TGLShader; const Memo_:TMemo );
 begin
@@ -168,7 +216,7 @@ begin
                end;
           end;
 
-          Imager.LoadFromFile( '..\..\_DATA\Spherical_1024x1024.png' );
+          Imager.LoadFromFile( '..\..\_DATA\noise.png' );
      end;
 end;
 
@@ -273,7 +321,6 @@ begin
 end;
 
 // 天球の関数
-// どうすれば法線は常に内向きになる?
 function SkyBox(const T_:TdSingle2D):TdSingle3D;
 const SCALE = 500;
 var
@@ -300,32 +347,32 @@ var
 begin
      with _Shaper do
      begin
-          LoadFormFuncRandomize( Apple, 1000, 1000 );
+          LoadFormFunc( Apple, 1000, 1000 );
 
           with S do
           begin
                Pose := TSingleM4.Identify * TSingleM4.RotateX(1.5*PI);
+               Strength := 0.5;
           end;
 
           Data := S;
      end;
 end;
-procedure TForm1.ReconsractShaper;
+
+/// 乱雑さ調整バー
+procedure TForm1.TrackBar1Change(Sender: TObject);
 var
    S :TMyShaperData;
 begin
-     with _Shaper do
-     begin
-          LoadFormFuncRandomize( Apple, 1000, 1000 );
-
-          with S do
+   Label2.Text := TTrackBar(Sender).Value.ToString;
+    with S do
           begin
                Pose := TSingleM4.Identify * TSingleM4.RotateX(1.5*PI);
+               Strength := TTrackBar(Sender).Value;
           end;
-
-          Data := S;
-     end;
+   _Shaper.Data := S;
 end;
+
 
 procedure TForm1.InitShaper2;
 var
@@ -358,6 +405,9 @@ begin
           _Shaper2 .Draw;
      end;
 end;
+
+
+
 
 
 
