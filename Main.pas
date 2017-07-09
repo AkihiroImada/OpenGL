@@ -343,10 +343,10 @@ var
 begin
    Label2.Text := TTrackBar(Sender).Value.ToString;
     with S do
-          begin
-               Pose := _Shaper.Data.Pose;
-               Strength := TrackBar1.Value;
-          end;
+     begin
+          Pose := _Shaper.Data.Pose;
+          Strength := TrackBar1.Value;
+     end;
    _Shaper.Data := S;
    GLViewer4.Repaint;
 end;

@@ -35,6 +35,7 @@ _Camera;
 layout(std140) uniform TShaperData
 {
   layout(row_major) mat4 Pose;
+  float Strength;
 }
 _Shaper;
 

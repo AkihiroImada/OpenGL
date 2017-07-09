@@ -17,7 +17,7 @@ _Camera;
 layout(std140) uniform TShaperData
 {
   layout(row_major) mat4 Pose;
-  //float Strength;
+  float Strength;
 }
 _Shaper;
 
@@ -43,7 +43,7 @@ _Result;
 void main()
 {
 //vec4 C = texture( _Imager, _VerterTex );
-  vec4 Offseted = _VerterPos + normalize(_VerterNor) * 0;//_Shaper.Strength;
+  vec4 Offseted = _VerterPos + normalize(_VerterNor) * _Shaper.Strength;
   _Result.Pos =                     _Shaper.Pose     * Offseted;
   _Result.Nor = transpose( inverse( _Shaper.Pose ) ) * _VerterNor;
   _Result.Tex =                                        _VerterTex;
