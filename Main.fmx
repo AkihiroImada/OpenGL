@@ -55,13 +55,14 @@ object Form1: TForm1
         Size.PlatformDefault = False
         Stroke.Kind = None
         inline GLViewer4: TGLViewer
-          Align = Contents
+          Align = MostTop
           Margins.Left = 5.000000000000000000
           Margins.Top = 5.000000000000000000
           Margins.Right = 115.000000000000000000
-          Margins.Bottom = 65.000000000000000000
+          Position.X = 5.000000000000000000
+          Position.Y = 5.000000000000000000
           Size.Width = 600.000000000000000000
-          Size.Height = 450.000000000000000000
+          Size.Height = 225.000000000000000000
           Size.PlatformDefault = False
           OnDblClick = GLViewer4DblClick
           OnMouseDown = GLViewer4MouseDown
@@ -95,9 +96,8 @@ object Form1: TForm1
           Margins.Right = 5.000000000000000000
           Margins.Bottom = 5.000000000000000000
           Position.X = 603.000000000000000000
-          Position.Y = 5.000000000000000000
+          Position.Y = 470.000000000000000000
           Size.Width = 112.000000000000000000
-          Size.Height = 451.000000000000000000
           Size.PlatformDefault = False
           Stroke.Kind = None
           object Rectangle1: TRectangle
@@ -137,7 +137,7 @@ object Form1: TForm1
             object TrackBar1: TTrackBar
               Align = Center
               CanParentFocus = True
-              Max = 1.000000000000000000
+              Max = 10.000000000000000000
               Orientation = Horizontal
               Size.Width = 89.000000000000000000
               Size.Height = 19.000000000000000000
@@ -215,7 +215,7 @@ object Form1: TForm1
               Align = MostTop
               TabOrder = 1
               Cursor = crIBeam
-              Max = 600.000000000000000000
+              Max = 9999.000000000000000000
               Value = 180.000000000000000000
               TextSettings.HorzAlign = Trailing
               Position.X = 5.000000000000000000
@@ -229,6 +229,23 @@ object Form1: TForm1
               Size.PlatformDefault = False
             end
           end
+        end
+        inline GLViewer1: TGLViewer
+          Align = MostTop
+          Margins.Left = 5.000000000000000000
+          Margins.Top = 5.000000000000000000
+          Margins.Right = 115.000000000000000000
+          Margins.Bottom = 5.000000000000000000
+          Position.X = 5.000000000000000000
+          Position.Y = 235.000000000000000000
+          Size.Width = 600.000000000000000000
+          Size.Height = 225.000000000000000000
+          Size.PlatformDefault = False
+          OnDblClick = GLViewer4DblClick
+          OnMouseDown = GLViewer4MouseDown
+          OnMouseMove = GLViewer4MouseMove
+          OnMouseUp = GLViewer4MouseUp
+          OnMouseWheel = GLViewer4MouseWheel
         end
       end
     end
@@ -267,7 +284,7 @@ object Form1: TForm1
             item
             end>
           IsSelected = True
-          Size.Width = 54.000000000000000000
+          Size.Width = 53.000000000000000000
           Size.Height = 26.000000000000000000
           Size.PlatformDefault = False
           StyleLookup = ''

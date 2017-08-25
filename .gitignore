@@ -56,3 +56,5 @@ __recovery/
 
 # Castalia statistics file
 *.stat
+
+Win64/Debug/animation/*

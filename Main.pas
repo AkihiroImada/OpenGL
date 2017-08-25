@@ -45,6 +45,7 @@ type
     Label3: TLabel;
     Button1: TButton;
     NumberBox1: TNumberBox;
+    GLViewer1: TGLViewer;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure GLViewer4DblClick(Sender: TObject);
@@ -57,6 +58,8 @@ type
       WheelDelta: Integer; var Handled: Boolean);
     procedure TrackBar1Change(Sender: TObject);
     procedure Button1Click(Sender: TObject);
+  const
+    IPD = 63.5 * 0.01 * 0.1; {瞳孔63.5mm}
   private
     { private 宣言 }
     _MouseA :TSingle2D;
@@ -67,10 +70,8 @@ type
     procedure EditShader( const Shader_:TGLShader; const Memo_:TMemo );
   public
     { public 宣言 }
-    _Camera1 :TMyCamera;
-    _Camera2 :TMyCamera;
-    _Camera3 :TMyCamera;
-    _Camera4 :TMyCamera;
+    _CameraL :TMyCamera;
+    _CameraR :TMyCamera;
     _Matery  :TMyMatery;
     _Matery2 :TMyMatery;
     _Shaper  :TMyShaper;
@@ -145,10 +146,16 @@ begin
      with C do
      begin
           Proj := TSingleM4.ProjPers( -_N/2, +_N/2, -_N/2, +_N/2, _N, _F );
-          Pose := TsingleM4.Translate(0, 0, +10);
+          Pose := TsingleM4.Translate(-IPD/2, 0, +10);
      end;
+     _CameraL.Data := C;
 
-     _Camera4.Data := C;
+     with C do
+     begin
+          Proj := TSingleM4.ProjPers( -_N/2, +_N/2, -_N/2, +_N/2, _N, _F );
+          Pose := TsingleM4.Translate(IPD/2, 0, +10);
+     end;
+     _CameraR.Data := C;
 end;
 
 //------------------------------------------------------------------------------
@@ -193,7 +200,7 @@ begin
                end;
           end;
 
-          Imager.LoadFromFile( '..\..\_DATA\noise.png' );
+          Imager.LoadFromFile( '..\..\_DATA\color_noise.png' );
      end;
 end;
 
@@ -375,7 +382,15 @@ procedure TForm1.InitViewer;
 begin
      GLViewer4.OnPaint := procedure
      begin
-          _Camera4.Use;
+          _CameraL.Use;
+          _Matery .Use;
+          _Shaper .DrawPoint;
+          _Matery2.Use;
+          _Shaper2 .Draw;
+     end;
+     GLViewer1.OnPaint := procedure
+     begin
+          _CameraR.Use;
           _Matery .Use;
           _Shaper .DrawPoint;
           _Matery2.Use;
@@ -393,7 +408,8 @@ begin
      _MouseA := TSingle2D.Create( 0, 0 );
      _MouseS := [];
 
-     _Camera4 := TMyCamera.Create;
+     _CameraL := TMyCamera.Create;
+     _CameraR := TMyCamera.Create;
      _Matery  := TMyMatery.Create;
      _Matery2 := TMyMatery.Create;
      _Shaper  := TMyShaper.Create;
@@ -409,7 +425,8 @@ end;
 
 procedure TForm1.FormDestroy(Sender: TObject);
 begin
-     _Camera4.DisposeOf;
+     _CameraL.DisposeOf;
+     _CameraR.DisposeOf;
      _Matery .DisposeOf;
      _Matery2.DisposeOf;
      _Shaper .DisposeOf;
@@ -417,7 +434,6 @@ begin
 end;
 
 ////////////////////////////////////////////////////////////////////////////////
-
 
 procedure TForm1.GLViewer4DblClick(Sender: TObject);
 begin
@@ -453,15 +469,23 @@ begin
 
           with C do
           begin
-               Proj := TSingleM4.ProjPers( -_N/2, +_N/2, -_N/2, +_N/2, _N, _F );
+               Proj := _CameraL.Data.Proj;
                Pose := TSingleM4.RotateX( DegToRad( _MouseA.Y ) )
                      * TSingleM4.RotateY( DegToRad( _MouseA.X ) )
-                     * TsingleM4.Translate(0, 0, +10+_WheelTotal);
+                     * TsingleM4.Translate(-IPD/2, 0, +10+_WheelTotal);
           end;
-
-          _Camera4.Data := C;
+          _CameraL.Data := C;
+          with C do
+          begin
+               Proj := _CameraL.Data.Proj;
+               Pose := TSingleM4.RotateX( DegToRad( _MouseA.Y ) )
+                     * TSingleM4.RotateY( DegToRad( _MouseA.X ) )
+                     * TsingleM4.Translate(IPD/2, 0, +10+_WheelTotal);
+          end;
+          _CameraR.Data := C;
 
           GLViewer4.Repaint;
+          GLViewer1.Repaint;
 
           _MouseP := P;
      end;
@@ -485,13 +509,23 @@ begin
   Label1.Text := (10+_WheelTotal).ToString;
   with C do
   begin
-    Proj := TSingleM4.ProjPers( -_N/2, +_N/2, -_N/2, +_N/2, _N, _F );
+    Proj := _CameraL.Data.Proj;
     Pose := TSingleM4.RotateX( DegToRad( _MouseA.Y ) )
     * TSingleM4.RotateY( DegToRad( _MouseA.X ) )
-    * TsingleM4.Translate(0, 0, +10+_WheelTotal);
+    * TsingleM4.Translate(-IPD/2, 0, +10+_WheelTotal);
   end;
-  _Camera4.Data := C;
+  _CameraL.Data := C;
+  with C do
+  begin
+    Proj := _CameraR.Data.Proj;
+    Pose := TSingleM4.RotateX( DegToRad( _MouseA.Y ) )
+    * TSingleM4.RotateY( DegToRad( _MouseA.X ) )
+    * TsingleM4.Translate(IPD/2, 0, +10+_WheelTotal);
+  end;
+  _CameraR.Data := C;
   GLViewer4.Repaint;
+  GLViewer1.Repaint;
+
 end;
 
 //------------------------------------------------------------------------------

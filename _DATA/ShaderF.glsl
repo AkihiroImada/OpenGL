@@ -64,7 +64,7 @@ void main()
   vec4 V = normalize( _Sender.Pos - C );
   float D = dot(V, normalize( _Sender.Nor ));
 
-  _FramerCol = vec4(1,D,0,1);
+  _FramerCol = vec4(1,D + _Shaper.Strength/20,_Shaper.Strength/10,1);
 }
 
 //##############################################################################

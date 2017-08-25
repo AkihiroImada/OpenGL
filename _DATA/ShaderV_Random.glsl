@@ -42,8 +42,9 @@ _Result;
 
 void main()
 {
-//vec4 C = texture( _Imager, _VerterTex );
-  vec4 Offseted = _VerterPos + normalize(_VerterNor) * _Shaper.Strength;
+  vec4 C = texture( _Imager, _VerterTex );
+  float Bri = C.r * 0.3 + C.g *0.6 + C.b * 0.1 + 0.1;
+  vec4 Offseted = _VerterPos - normalize(_VerterNor) * _Shaper.Strength * Bri;
   _Result.Pos =                     _Shaper.Pose     * Offseted;
   _Result.Nor = transpose( inverse( _Shaper.Pose ) ) * _VerterNor;
   _Result.Tex =                                        _VerterTex;
